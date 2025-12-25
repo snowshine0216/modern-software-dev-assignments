@@ -7,8 +7,14 @@ Make sure you have first done the installation described in the top-level `READM
 
 ## ENV creation
 create .env in week1 folder. add below lines
-```
+``` bash
 OLLAMA_HOST=http://10.23.38.9:11434
+```
+or add below into launch.json
+``` json
+"env": {
+                "OLLAMA_HOST": "http://10.23.38.9:11434"
+            }
 ```
 
 ## Ollama installation
@@ -63,6 +69,7 @@ If your Ollama server is running on a remote machine (e.g., a Linux server with 
         ```
      3. Restart the service: `sudo systemctl daemon-reload && sudo systemctl restart ollama`.
    - **Firewall:** Ensure port `11434` is open on the remote machine.
+   - to test connection: `curl -v http://10.23.38.9:11434/api/tags`
 
 2. **Run Local Scripts:**
    Pass the `OLLAMA_HOST` environment variable pointing to your remote server when running your scripts:
