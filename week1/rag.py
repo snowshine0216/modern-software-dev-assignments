@@ -1,6 +1,7 @@
 import os
 import re
-from typing import List, Callable
+from typing import Callable, List
+
 from dotenv import load_dotenv
 from ollama import chat
 

@@ -6,10 +6,10 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = """You are a word reversal expert. To reverse a word correctly you need to step by step:
+YOUR_SYSTEM_PROMPT = """You are a word reversal expert. To reverse a word correctly you need to do the following steps:
 1. List each letter with its position (1st, 2nd, 3rd, etc.)
 2. Read the letters from the LAST position to the FIRST position
-3. Keep uppercase/lowercase exactly as in the original
+3. concatenate the letters from step2
 
 Here are examples showing the correct reversal process:
 
@@ -34,11 +34,12 @@ Letters: M(1) i(2) s(3) s(4) i(5) s(6) s(7) i(8) p(9) p(10) i(11)
 Reversed positions: i(11) p(10) p(9) i(8) s(7) s(6) i(5) s(4) s(3) i(2) M(1)
 Output: ippississiM
 
-When given a word, output ONLY the reversed word with no extra text or explanation.
+When given a word, output the reversed word.
 """
 
+#  Only output the reversed word, no other text:
 USER_PROMPT = """
-Reverse the order of letters in the following word. Only output the reversed word, no other text:
+Reverse the order of letters in the following word.Only output the reversed word, no other text:
 
 httpstatus
 """
