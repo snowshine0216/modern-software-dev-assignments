@@ -9,10 +9,10 @@ from openai import OpenAI
 
 load_dotenv()
 
-openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+openai_client = OpenAI(base_url="https://api.openai.com/v1", api_key=os.environ["OPENROUTER_API_KEY"])
 
 SYSTEM_PROMPT = """
-You are a coding assistant whose goal it is to help us solve coding tasks. 
+You are a coding assistant whose goal it is to help us solve coding tasks.
 You have access to a series of tools you can execute. Hear are the tools you can execute:
 
 {tool_list_repr}
@@ -30,15 +30,28 @@ RESET_COLOR = "\u001b[0m"
 
 def resolve_abs_path(path_str: str) -> Path:
     """
-    file.py -> /Users/home/mihail/modern-software-dev-lectures/file.py
+    Resolves a string path into an absolute Path object.
+
+    Examples:
+    - "~/project/file.py" -> "/Users/name/project/file.py" (Home expansion)
+    - "src/main.py" -> "/current/working/dir/src/main.py" (Relative to absolute)
+    - "/tmp/log.txt" -> "/tmp/log.txt" (Already absolute)
+
+    :param path_str: The path string to resolve.
+    :return: A fully qualified absolute Path object.
     """
+    # Expand ~ (e.g., ~/Downloads -> /Users/xuyin/Downloads)
     path = Path(path_str).expanduser()
+
+    # If the path is relative, prepend the current working directory
     if not path.is_absolute():
+        # .resolve() handles '..' and '.' in paths to create a clean absolute path
         path = (Path.cwd() / path).resolve()
+
     return path
 
 
-def read_file_tool(filename: str) -> Dict[str, Any]:
+def read_file_tool(filename: str) -> dict[str, Any]:
     """
     Gets the full content of a file provided by the user.
     :param filename: The name of the file to read.
@@ -54,7 +67,7 @@ def read_file_tool(filename: str) -> Dict[str, Any]:
     }
 
 
-def list_files_tool(path: str) -> Dict[str, Any]:
+def list_files_tool(path: str) -> dict[str, Any]:
     """
     Lists the files in a directory provided by the user.
     :param path: The path to a directory to list files from.
@@ -73,7 +86,7 @@ def list_files_tool(path: str) -> Dict[str, Any]:
     }
 
 
-def edit_file_tool(path: str, old_str: str, new_str: str) -> Dict[str, Any]:
+def edit_file_tool(path: str, old_str: str, new_str: str) -> dict[str, Any]:
     """
     Replaces first occurrence of old_str with new_str in file. If old_str is empty,
     create/overwrite file with new_str.
@@ -164,25 +177,35 @@ def run_coding_agent_loop():
     print(get_full_system_prompt())
     conversation = [{
         "role": "system",
-        "content": get_full_system_prompt()
+        "content": [{
+            "type": "text",
+            "text": get_full_system_prompt()
+        }]
     }]
     while True:
         try:
-            user_input = input(f"{YOU_COLOR}You:{RESET_COLOR}:")
+            user_input = input(f"{YOU_COLOR}You:{RESET_COLOR} ")
         except (KeyboardInterrupt, EOFError):
             break
         conversation.append({
             "role": "user",
-            "content": user_input.strip()
+            "content": [{
+                "type": "text",
+                "text": user_input.strip()
+            }]
         })
         while True:
             assistant_response = execute_llm_call(conversation)
             tool_invocations = extract_tool_invocations(assistant_response)
             if not tool_invocations:
-                print(f"{ASSISTANT_COLOR}Assistant:{RESET_COLOR}: {assistant_response}")
+                print(f"{ASSISTANT_COLOR}Assistant:{RESET_COLOR}")
+                print(assistant_response)
                 conversation.append({
                     "role": "assistant",
-                    "content": assistant_response
+                    "content": [{
+                        "type": "text",
+                        "text": assistant_response
+                    }]
                 })
                 break
             for name, args in tool_invocations:
@@ -199,7 +222,10 @@ def run_coding_agent_loop():
                                 args.get("new_str", ""))
                 conversation.append({
                     "role": "user",
-                    "content": f"tool_result({json.dumps(resp)})"
+                    "content": [{
+                        "type": "text",
+                        "text": f"tool_result({json.dumps(resp)})"
+                    }]
                 })
 
 
