@@ -57,6 +57,8 @@ def YOUR_CONTEXT_PROVIDER(corpus: List[str]) -> List[str]:
 
     For example, return [] to simulate missing context, or [corpus[0]] to include the API docs.
     """
+    if corpus:
+        return corpus
     return []
 
 
