@@ -16,6 +16,7 @@ dependencies = [
     "dotenv>=0.9.9",
     "load-dotenv>=0.1.0",
     "fastmcp>=2.14.1",
+    "poetry>=2.2.1",
 ]
 
 [tool.poetry]
