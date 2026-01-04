@@ -356,7 +356,7 @@ After verifying `uv sync` works, the old `requirements.txt` can be removed or ke
 
 ### Documentation
 - [x] Fill out `week6/writeup.md` with fix details
-- [ ] Commit all changes with descriptive commit messages
+- [x] Commit all changes with descriptive commit messages
 
 ---
 
